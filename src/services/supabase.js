@@ -3,10 +3,6 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-console.log('🔍 Supabase 配置檢查:')
-console.log('URL 已設定:', !!supabaseUrl, supabaseUrl ? `(${supabaseUrl.substring(0, 30)}...)` : '(未設定)')
-console.log('Key 已設定:', !!supabaseAnonKey, supabaseAnonKey ? `(${supabaseAnonKey.substring(0, 20)}...)` : '(未設定)')
-
 // Validate environment variables
 if (!supabaseUrl || !supabaseAnonKey || 
     supabaseUrl === 'your_supabase_project_url' || 
@@ -242,22 +238,20 @@ export const commentsApi = {
       throw error
     }
     
-    // 補充用戶信息
+    // 批量獲取用戶信息（優化版）
     if (data && data.length > 0) {
-      const commentsWithProfiles = await Promise.all(
-        data.map(async (comment) => {
-          const { data: profile } = await supabase
-            .from('user_profiles')
-            .select('display_name, email')
-            .eq('id', comment.user_id)
-            .single()
-          return {
-            ...comment,
-            user_profiles: profile
-          }
-        })
-      )
-      return commentsWithProfiles
+      const userIds = [...new Set(data.map(c => c.user_id))]
+      const { data: profiles } = await supabase
+        .from('user_profiles')
+        .select('id, display_name, email')
+        .in('id', userIds)
+      
+      const profileMap = new Map(profiles?.map(p => [p.id, p]) || [])
+      
+      return data.map(comment => ({
+        ...comment,
+        user_profiles: profileMap.get(comment.user_id)
+      }))
     }
     
     return data
@@ -269,55 +263,35 @@ export const commentsApi = {
       throw new Error('Supabase 尚未配置，請檢查環境變數設置')
     }
     
-    // 獲取當前用戶信息
-    const { data: { user } } = await supabase.auth.getUser()
-    console.log('當前用戶:', user?.email, 'ID:', user?.id)
-    
-    // 檢查用戶角色
-    if (user) {
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single()
-      console.log('用戶角色:', profile?.role)
-    }
-    
     const { data, error } = await supabase
       .from('comments')
       .select('*')
       .order('created_at', { ascending: false })
-    
-    console.log('查詢結果:', { data, error, count: data?.length || 0 })
     
     if (error) {
       console.error('查詢錯誤詳情:', {
         message: error.message,
         details: error.details,
         hint: error.hint,
-        code: error.code,
-        fullError: error
+        code: error.code
       })
       throw error
     }
     
-    // 如果成功獲取評論，再補充用戶信息
+    // 批量獲取用戶信息（優化版）
     if (data && data.length > 0) {
-      console.log('成功獲取評論，正在補充用戶信息...')
-      const commentsWithProfiles = await Promise.all(
-        data.map(async (comment) => {
-          const { data: profile } = await supabase
-            .from('user_profiles')
-            .select('display_name, email')
-            .eq('id', comment.user_id)
-            .single()
-          return {
-            ...comment,
-            user_profiles: profile
-          }
-        })
-      )
-      return commentsWithProfiles
+      const userIds = [...new Set(data.map(c => c.user_id))]
+      const { data: profiles } = await supabase
+        .from('user_profiles')
+        .select('id, display_name, email')
+        .in('id', userIds)
+      
+      const profileMap = new Map(profiles?.map(p => [p.id, p]) || [])
+      
+      return data.map(comment => ({
+        ...comment,
+        user_profiles: profileMap.get(comment.user_id)
+      }))
     }
     
     return data
@@ -339,28 +313,25 @@ export const commentsApi = {
         message: error.message,
         details: error.details,
         hint: error.hint,
-        code: error.code,
-        fullError: error
+        code: error.code
       })
       throw error
     }
     
-    // 補充用戶信息
+    // 批量獲取用戶信息（優化版）
     if (data && data.length > 0) {
-      const commentsWithProfiles = await Promise.all(
-        data.map(async (comment) => {
-          const { data: profile } = await supabase
-            .from('user_profiles')
-            .select('display_name, email')
-            .eq('id', comment.user_id)
-            .single()
-          return {
-            ...comment,
-            user_profiles: profile
-          }
-        })
-      )
-      return commentsWithProfiles
+      const userIds = [...new Set(data.map(c => c.user_id))]
+      const { data: profiles } = await supabase
+        .from('user_profiles')
+        .select('id, display_name, email')
+        .in('id', userIds)
+      
+      const profileMap = new Map(profiles?.map(p => [p.id, p]) || [])
+      
+      return data.map(comment => ({
+        ...comment,
+        user_profiles: profileMap.get(comment.user_id)
+      }))
     }
     
     return data

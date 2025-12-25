@@ -86,7 +86,9 @@ const handleEmailConfirmation = async () => {
     const errorCode = hashParams.get('error')
     const errorDescription = hashParams.get('error_description')
 
-    console.log('Auth callback params:', { type, errorCode, errorDescription, hasToken: !!accessToken })
+    if (import.meta.env.DEV) {
+      console.log('Auth callback params:', { type, errorCode, errorDescription, hasToken: !!accessToken })
+    }
 
     // 檢查是否有錯誤
     if (errorCode) {

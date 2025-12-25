@@ -147,6 +147,9 @@ async function submitComment() {
     newComment.value = ''
     showSuccess.value = true
     
+    // 重新載入留言列表
+    await loadComments()
+    
     setTimeout(() => {
       showSuccess.value = false
     }, 3000)
