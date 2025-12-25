@@ -6,7 +6,7 @@
           文章照片 ({{ photos.length }}/10)
         </h3>
         <p class="text-sm text-gray-500 mt-1">
-          支援任何圖片格式，自動轉換為 JPG 並壓縮至 1MB 以下
+          支援 JPG、PNG、WebP、GIF、BMP、HEIC，自動轉為 JPG 並壓縮至 1MB 以下
         </p>
       </div>
       
@@ -66,7 +66,7 @@
 
     <p v-if="photos.length === 0" class="text-center text-gray-400 py-8">
       尚未上傳照片<br>
-      <span class="text-xs">支援 JPG、PNG、WebP、GIF、BMP 等格式</span>
+      <span class="text-xs">支援 JPG、PNG、WebP、GIF、BMP、HEIC 等格式</span>
     </p>
   </div>
 </template>
