@@ -17,8 +17,50 @@
     </div>
 
     <!-- Error State -->
-    <div v-else-if="error" class="luxury-card bg-red-50 border-red-200">
-      <p class="text-red-700">{{ error }}</p>
+    <div v-else-if="error" class="luxury-card bg-gradient-to-br from-red-50 to-orange-50 border-2 border-red-200">
+      <div class="text-center">
+        <div class="text-6xl mb-4">⚠️</div>
+        <h2 class="text-2xl font-playfair font-bold text-red-700 mb-3">需要設置 Supabase</h2>
+        <p class="text-red-600 mb-4">{{ error }}</p>
+        
+        <div class="bg-white rounded-lg p-6 text-left max-w-2xl mx-auto mb-6 shadow-lg">
+          <h3 class="text-lg font-bold text-luxury-deepPurple mb-3">🚀 快速設置步驟：</h3>
+          <ol class="space-y-2 text-gray-700">
+            <li class="flex items-start">
+              <span class="font-bold text-luxury-gold mr-2">1.</span>
+              <span>前往 <a href="https://app.supabase.com" target="_blank" class="text-luxury-purple underline hover:text-luxury-gold">app.supabase.com</a> 創建專案</span>
+            </li>
+            <li class="flex items-start">
+              <span class="font-bold text-luxury-gold mr-2">2.</span>
+              <span>執行 <code class="bg-gray-100 px-2 py-1 rounded text-sm">SUPABASE_SETUP.md</code> 中的 SQL 腳本</span>
+            </li>
+            <li class="flex items-start">
+              <span class="font-bold text-luxury-gold mr-2">3.</span>
+              <span>複製專案的 URL 和 API Key 到 <code class="bg-gray-100 px-2 py-1 rounded text-sm">.env</code> 文件</span>
+            </li>
+            <li class="flex items-start">
+              <span class="font-bold text-luxury-gold mr-2">4.</span>
+              <span>重啟開發伺服器</span>
+            </li>
+          </ol>
+        </div>
+        
+        <div class="flex justify-center space-x-4">
+          <a 
+            href="https://app.supabase.com" 
+            target="_blank"
+            class="luxury-button-gold inline-block"
+          >
+            前往 Supabase
+          </a>
+          <button 
+            @click="loadArticles"
+            class="luxury-button inline-block"
+          >
+            重試連接
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Articles Grid -->

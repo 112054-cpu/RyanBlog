@@ -3,7 +3,28 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// Validate environment variables
+if (!supabaseUrl || !supabaseAnonKey || 
+    supabaseUrl === 'your_supabase_project_url' || 
+    supabaseUrl === 'https://your-project-id.supabase.co' ||
+    supabaseAnonKey === 'your_supabase_anon_key' ||
+    supabaseAnonKey === 'your-anon-key-here') {
+  coif (!supabase) {
+      throw new Error('Supabase 尚未配置，請檢查環境變數設置')
+    }
+    nsole.error('❌ Supabase 環境變數尚未配置！')
+  console.error('📋 請按照以下步驟設置：')
+  console.error('1. 前往 https://app.supabase.com 創建專案')
+  console.error('2. 複製專案的 URL 和 API Key')
+  console.error('3. 編輯 .env 文件，填入您的憑證')
+  console.error('4. 重啟開發伺服器 (npm run dev)')
+  console.error('')
+  console.error('詳細說明請查看：SUPABASE_SETUP.md')
+}
+
+export const supabase = supabaseUrl && supabaseAnonKey ? 
+  createClient(supabaseUrl, supabaseAnonKey) : 
+  null
 
 // Articles API
 export const articlesApi = {
