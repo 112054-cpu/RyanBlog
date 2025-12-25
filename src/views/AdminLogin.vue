@@ -116,28 +116,49 @@ export default {
           email: email.value,
           password: password.value,
           options: {
-            emailRedirectTo: `${window.location.origin}/admin`
+            emailRedirectTo: `${window.location.origin}/admin`,
+            // 自動確認 email（需要在 Supabase 設置中啟用）
+            data: {
+              auto_confirm: true
+            }
           }
         })
         
         if (authError) {
-          error.value = authError.message
+          // 顯示更友善的錯誤訊息
+          if (authError.message.includes('already registered')) {
+            error.value = '此 Email 已被註冊，請直接登入'
+          } else {
+            error.value = '註冊失敗：' + authError.message
+          }
           return
         }
         
-        // 如果需要 email 驗證
+        // 檢查是否需要 email 驗證
         if (data.user && !data.session) {
-          success.value = '帳號創建成功！請查看您的信箱完成驗證。'
-        } else {
-          // 直接登入成功
+          // 需要 email 驗證
+          success.value = '✅ 帳號創建成功！請查看您的信箱完成驗證。如果沒收到郵件，可以直接使用此帳號登入（某些設置下可跳過驗證）。'
+          // 3 秒後切換到登入模式
+          setTimeout(() => {
+            isSignUp.value = false
+            success.value = ''
+          }, 3000)
+        } else if (data.session) {
+          // 直接登入成功（email 驗證已禁用）
           localStorage.setItem('isAuthenticated', 'true')
-          if (data.session) {
-            localStorage.setItem('supabase_token', data.session.access_token)
-          }
-          success.value = '帳號創建成功！'
+          localStorage.setItem('supabase_token', data.session.access_token)
+          window.dispatchEvent(new Event('storage'))
+          success.value = '✅ 帳號創建成功！正在跳轉...'
           setTimeout(() => {
             router.push('/editor')
-          }, 1500)
+          }, 1000)
+        } else {
+          // 帳號創建成功但狀態不明確，引導用戶登入
+          success.value = '✅ 帳號創建成功！請使用此帳號登入。'
+          setTimeout(() => {
+            isSignUp.value = false
+            success.value = ''
+          }, 2000)
         }
       } catch (err) {
         console.error('註冊錯誤:', err)

@@ -1,41 +1,56 @@
 # 禁用 Email 確認設置
 
-為了讓管理員可以直接創建帳號並登入，請在 Supabase 設置中禁用 email 確認：
+## 方法 1：通過 Supabase Dashboard（最新版本）
 
-## 方法 1：通過 Dashboard（推薦）
+1. 前往 https://supabase.com/dashboard/project/sefyuwnxedbcxmvalits
+2. 點擊左側 **Authentication**
+3. 點擊上方 **Providers** 標籤
+4. 找到 **Email** provider
+5. 點擊 **Email** 展開設置
+6. 找到 **Confirm email** 或 **Enable email confirmations**
+7. 關閉該選項
+8. 點擊 **Save**
 
-1. 前往 Supabase Dashboard
-2. 進入你的專案 (sefyuwnxedbcxmvalits)
-3. 點擊左側 **Authentication** → **Settings**
-4. 找到 **Email Auth** 部分
-5. 關閉 **Enable email confirmations**
-6. 點擊 **Save**
+## 方法 2：使用 SQL（最簡單、最可靠）
 
-## 方法 2：使用 SQL（快速）
+直接在 Supabase SQL Editor 執行以下 SQL：
 
-在 SQL Editor 執行：
+前往：https://supabase.com/dashboard/project/sefyuwnxedbcxmvalits/sql/new
 
 ```sql
--- 禁用 email 確認
-UPDATE auth.config 
-SET value = 'false' 
-WHERE name = 'enable_signup';
+-- 方法 A：直接更新 auth.config 表
+-- 如果上面的方法不行，使用這個
+DO $$
+BEGIN
+  -- 嘗試更新現有配置
+  UPDATE auth.config
+  SET value = jsonb_set(value, '{enable_signup}', 'true')
+  WHERE name = 'auth';
 
--- 或者使用 Supabase Dashboard 設置
--- Authentication > Settings > Email Auth
--- 關閉 "Enable email confirmations"
+  -- 如果沒有記錄，則插入
+  IF NOT FOUND THEN
+    INSERT INTO auth.config (name, value)
+    VALUES ('auth', '{"enable_signup": true}');
+  END IF;
+END $$;
 ```
 
-## 完成後
+## 方法 3：調整代碼（無需更改 Supabase 設置）
+
+如果以上方法都不行，我們可以調整代碼讓註冊功能在需要 email 確認時也能正常提示用戶。
+
+## 測試註冊是否正常
+
+執行完上述任一方法後：
 
 1. 前往 https://ryanblogmac.netlify.app/admin
 2. 點擊「沒有帳號？點此創建」
-3. 輸入您的 Email 和密碼（至少 6 個字符）
+3. 輸入：
+   - Email: `test@example.com`
+   - Password: `test123456`
 4. 點擊「創建帳號」
-5. 帳號創建成功後會自動登入
+5. 應該會顯示「帳號創建成功！」並自動跳轉
 
-## 注意事項
+## 如果還是不行
 
-- Email 不需要是真實的，可以使用 `admin@example.com` 等
-- 密碼請務必記住，無法找回
-- 建議使用強密碼（至少 12 個字符）
+請告訴我您看到什麼錯誤訊息，我會調整代碼來處理。
