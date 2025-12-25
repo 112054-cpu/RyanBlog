@@ -6,7 +6,10 @@
           文章照片 ({{ photos.length }}/10)
         </h3>
         <p class="text-sm text-gray-500 mt-1">
-          支援 JPG、PNG、WebP、GIF、BMP、HEIC，自動轉為 JPG 並壓縮至 1MB 以下
+          支援 JPG、PNG、WebP、GIF、BMP，自動轉為 JPG 並壓縮至 1MB 以下
+        </p>
+        <p class="text-xs text-gray-400 mt-1">
+          💡 iPhone 用戶建議：設定 > 相機 > 格式 > 選擇「最兼容」可避免格式問題
         </p>
       </div>
       
@@ -31,8 +34,21 @@
       <p class="text-sm text-gray-500">{{ uploadProgress }}</p>
     </div>
 
-    <div v-if="error" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-      {{ error }}
+    <div v-if="error" class="bg-red-50 border-2 border-red-300 text-red-800 px-4 py-4 rounded-lg space-y-2">
+      <div class="flex items-start">
+        <span class="text-xl mr-2">⚠️</span>
+        <div class="flex-1">
+          <p class="font-semibold mb-1">上傳失敗</p>
+          <p class="text-sm">{{ error }}</p>
+        </div>
+        <button @click="error = ''" class="text-red-600 hover:text-red-800 ml-2">✕</button>
+      </div>
+      <div v-if="error.includes('HEIC')" class="bg-white/50 p-3 rounded text-xs space-y-1">
+        <p class="font-semibold">💡 解決方法：</p>
+        <p>1. 在 iPhone 開啟「設定」→「相機」→「格式」</p>
+        <p>2. 選擇「最兼容」（會改為 JPG 格式）</p>
+        <p>3. 或使用其他圖片編輯 App 先轉為 JPG</p>
+      </div>
     </div>
 
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -66,7 +82,8 @@
 
     <p v-if="photos.length === 0" class="text-center text-gray-400 py-8">
       尚未上傳照片<br>
-      <span class="text-xs">支援 JPG、PNG、WebP、GIF、BMP、HEIC 等格式</span>
+      <span class="text-xs">支援 JPG、PNG、WebP、GIF、BMP 等格式</span><br>
+      <span class="text-xs text-gray-400 mt-1">iPhone 用戶請使用「最兼容」格式拍照</span>
     </p>
   </div>
 </template>

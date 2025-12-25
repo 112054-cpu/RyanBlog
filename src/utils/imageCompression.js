@@ -1,9 +1,22 @@
 import imageCompression from 'browser-image-compression'
-import heic2any from 'heic2any'
+
+// 動態導入 heic2any（避免初始載入錯誤）
+let heic2any = null
+try {
+  heic2any = (await import('heic2any')).default
+} catch (error) {
+  console.warn('HEIC 轉換庫載入失敗，HEIC 格式將無法使用')
+}
 
 // 將 HEIC 轉換為 JPEG
 async function convertHeicToJpeg(file) {
+  if (!heic2any) {
+    throw new Error('HEIC 轉換功能不可用，請使用 JPG、PNG 等其他格式')
+  }
+  
   try {
+    console.log('開始轉換 HEIC 格式...')
+    
     const convertedBlob = await heic2any({
       blob: file,
       toType: 'image/jpeg',
@@ -13,6 +26,8 @@ async function convertHeicToJpeg(file) {
     // 如果返回數組，取第一個
     const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob
     
+    console.log('HEIC 轉換成功')
+    
     // 創建新的 File 對象
     return new File([blob], file.name.replace(/\.heic$/i, '.jpg'), {
       type: 'image/jpeg',
@@ -20,7 +35,7 @@ async function convertHeicToJpeg(file) {
     })
   } catch (error) {
     console.error('HEIC 轉換失敗:', error)
-    throw new Error('HEIC 格式轉換失敗，請重試或使用其他格式')
+    throw new Error('HEIC 格式轉換失敗。建議：1) 在 iPhone 設定中將照片格式改為「最兼容」 2) 或使用其他 App 先轉為 JPG')
   }
 }
 
@@ -30,8 +45,18 @@ export async function compressImage(file) {
   // 如果是 HEIC 格式，先轉換為 JPEG
   if (file.type === 'image/heic' || file.type === 'image/heif' || 
       file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif')) {
+    
+    if (!heic2any) {
+      throw new Error('您的瀏覽器不支援 HEIC 格式。請使用 JPG、PNG 或其他格式。或在 iPhone「設定 > 相機 > 格式」中選擇「最兼容」')
+    }
+    
     console.log('檢測到 HEIC 格式，正在轉換為 JPG...')
-    processFile = await convertHeicToJpeg(file)
+    try {
+      processFile = await convertHeicToJpeg(file)
+    } catch (error) {
+      // 重新拋出更友善的錯誤訊息
+      throw error
+    }
   }
   
   const options = {
@@ -75,9 +100,15 @@ export function validateImageFile(file) {
   const fileName = file.name.toLowerCase()
   const hasValidExtension = validExtensions.some(ext => fileName.endsWith(ext))
   const hasValidType = validTypes.includes(file.type)
+  const isHeic = fileName.endsWith('.heic') || fileName.endsWith('.heif') || 
+                 file.type === 'image/heic' || file.type === 'image/heif'
   
   if (!hasValidType && !hasValidExtension) {
-    throw new Error('請上傳圖片檔案（支援 JPG、PNG、WebP、GIF、BMP、HEIC 格式，將自動轉為 JPG）')
+    throw new Error('請上傳圖片檔案（支援 JPG、PNG、WebP、GIF、BMP、HEIC 格式）')
+  }
+  
+  if (isHeic && !heic2any) {
+    throw new Error('HEIC 格式需要特殊支援。建議：在 iPhone「設定 > 相機 > 格式」中選擇「最兼容」，或使用 JPG、PNG 格式')
   }
   
   if (file.size > maxSize) {
