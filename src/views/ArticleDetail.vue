@@ -55,6 +55,7 @@
           <img 
             :src="photo.url" 
             :alt="article.title"
+            loading="lazy"
             class="w-full h-full object-cover rounded-lg luxury-border cursor-pointer hover:scale-105 transition-transform duration-300"
             @click="openLightbox(photo.url)"
           />
@@ -104,6 +105,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { marked } from 'marked'
+import DOMPurify from 'dompurify'
 import SocialShare from '../components/SocialShare.vue'
 import { articlesApi } from '../services/supabase'
 
@@ -187,10 +189,16 @@ export default {
       // 配置 marked
       marked.setOptions({
         breaks: true,
-        gfm: true
+        gfm: true,
+        sanitize: false // 由 DOMPurify 處理清理
       })
       
-      return marked(content)
+      // 先渲染 Markdown，再用 DOMPurify 清理 HTML（防止 XSS 攻擊）
+      const rawHTML = marked(content)
+      return DOMPurify.sanitize(rawHTML, {
+        ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'a', 'ul', 'ol', 'li', 'strong', 'em', 'code', 'pre', 'blockquote', 'hr', 'br', 'table', 'thead', 'tbody', 'tr', 'th', 'td'],
+        ALLOWED_ATTR: ['href', 'target', 'rel', 'class']
+      })
     }
 
     const editArticle = () => {

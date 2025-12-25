@@ -1,8 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
-import ArticleDetail from '../views/ArticleDetail.vue'
-import ArticleEditor from '../views/ArticleEditor.vue'
-import AdminLogin from '../views/AdminLogin.vue'
+import { authUtils } from '../utils/auth'
+
+// Lazy loading components for better performance
+const Home = () => import('../views/Home.vue')
+const ArticleDetail = () => import('../views/ArticleDetail.vue')
+const ArticleEditor = () => import('../views/ArticleEditor.vue')
+const AdminLogin = () => import('../views/AdminLogin.vue')
 
 const routes = [
   {
@@ -39,11 +42,11 @@ const router = createRouter({
   routes
 })
 
-// Simple auth guard (expand with real auth later)
-router.beforeEach((to, from, next) => {
+// Auth guard with token validation
+router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth) {
-    const isAuthenticated = localStorage.getItem('isAuthenticated')
-    if (!isAuthenticated) {
+    const isValid = await authUtils.validateToken()
+    if (!isValid) {
       next('/admin')
     } else {
       next()

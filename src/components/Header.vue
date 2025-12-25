@@ -51,6 +51,7 @@
 <script>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { authUtils } from '../utils/auth'
 
 export default {
   name: 'Header',
@@ -58,12 +59,12 @@ export default {
     const router = useRouter()
     const isAuthenticated = ref(false)
 
-    const checkAuth = () => {
-      isAuthenticated.value = !!localStorage.getItem('isAuthenticated')
+    const checkAuth = async () => {
+      isAuthenticated.value = await authUtils.validateToken()
     }
 
-    const logout = () => {
-      localStorage.removeItem('isAuthenticated')
+    const logout = async () => {
+      await authUtils.signOut()
       isAuthenticated.value = false
       router.push('/')
     }

@@ -31,9 +31,11 @@
 
         <button 
           type="submit" 
-          class="luxury-button w-full"
+          :disabled="loading"
+          class="luxury-button w-full disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          登入
+          <span v-if="loading">登入中...</span>
+          <span v-else">登入</span>
         </button>
 
         <div class="text-center">
@@ -58,6 +60,7 @@
 <script>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { supabase } from '../services/supabase'
 
 export default {
   name: 'AdminLogin',
@@ -65,24 +68,41 @@ export default {
     const router = useRouter()
     const password = ref('')
     const error = ref('')
+    const loading = ref(false)
 
-    // Simple password authentication (replace with real auth in production)
-    const ADMIN_PASSWORD = 'admin123'
-
-    const login = () => {
-      if (password.value === ADMIN_PASSWORD) {
+    const login = async () => {
+      try {
+        loading.value = true
+        error.value = ''
+        
+        // 使用 Supabase Auth 登入（需先在 Supabase 創建用戶）
+        const { data, error: authError } = await supabase.auth.signInWithPassword({
+          email: 'admin@ryanblog.local',
+          password: password.value
+        })
+        
+        if (authError) {
+          error.value = '密碼錯誤，請重試'
+          password.value = ''
+          return
+        }
+        
         localStorage.setItem('isAuthenticated', 'true')
+        localStorage.setItem('supabase_token', data.session.access_token)
         window.dispatchEvent(new Event('storage'))
         router.push('/editor')
-      } else {
-        error.value = '密碼錯誤，請重試'
-        password.value = ''
+      } catch (err) {
+        console.error('登入錯誤:', err)
+        error.value = '登入失敗，請稍後再試'
+      } finally {
+        loading.value = false
       }
     }
 
     return {
       password,
       error,
+      loading,
       login
     }
   }
