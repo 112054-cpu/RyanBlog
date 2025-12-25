@@ -180,14 +180,24 @@ export default {
         })
         
         if (authError) {
-          error.value = '登入失敗：' + authError.message
+          // 提供更友善的錯誤訊息
+          if (authError.message.includes('Invalid login credentials')) {
+            error.value = '❌ 登入失敗：帳號或密碼錯誤。如果您還沒有帳號，請點擊下方「沒有帳號？點此創建」註冊。'
+          } else if (authError.message.includes('Email not confirmed')) {
+            error.value = '⚠️ 請先確認您的 Email。請查看信箱中的驗證郵件。'
+          } else {
+            error.value = '登入失敗：' + authError.message
+          }
           return
         }
         
         localStorage.setItem('isAuthenticated', 'true')
         localStorage.setItem('supabase_token', data.session.access_token)
         window.dispatchEvent(new Event('storage'))
-        router.push('/editor')
+        success.value = '✅ 登入成功！'
+        setTimeout(() => {
+          router.push('/editor')
+        }, 500)
       } catch (err) {
         console.error('登入錯誤:', err)
         error.value = '登入失敗，請稍後再試'
