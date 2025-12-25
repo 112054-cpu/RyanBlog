@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gradient-to-br from-luxury-cream via-white to-luxury-cream;
+    @apply font-cormorant text-gray-800;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-playfair;
+  }
+}
+
+@layer components {
+  .luxury-card {
+    @apply bg-white/80 backdrop-blur-sm rounded-lg shadow-xl border border-luxury-gold/20 p-6;
+    @apply transition-all duration-300 hover:shadow-2xl hover:scale-[1.02];
+  }
+  
+  .luxury-button {
+    @apply px-6 py-3 rounded-lg font-semibold text-white;
+    @apply bg-gradient-to-r from-luxury-purple to-luxury-deepPurple;
+    @apply hover:from-luxury-deepPurple hover:to-luxury-purple;
+    @apply transition-all duration-300 transform hover:scale-105;
+    @apply shadow-lg hover:shadow-xl;
+  }
+  
+  .luxury-button-gold {
+    @apply px-6 py-3 rounded-lg font-semibold text-white;
+    @apply bg-gold-gradient;
+    @apply hover:shadow-xl hover:scale-105;
+    @apply transition-all duration-300;
+  }
+  
+  .luxury-border {
+    @apply border-2 border-luxury-gold/30 rounded-lg;
+    position: relative;
+  }
+  
+  .luxury-border::before {
+    content: '';
+    @apply absolute inset-0 rounded-lg;
+    background: linear-gradient(45deg, transparent 30%, rgba(212, 175, 55, 0.1) 50%, transparent 70%);
+    animation: shimmer 3s infinite;
+  }
+}
+
+@keyframes shimmer {
+  0%, 100% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
