@@ -1,5 +1,5 @@
 // Auth utilities for secure authentication
-import { supabase } from './supabase'
+import { supabase } from '../services/supabase'
 
 export const authUtils = {
   // 檢查用戶是否已登入
