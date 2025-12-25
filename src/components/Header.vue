@@ -19,28 +19,30 @@
             首頁
           </router-link>
           
-          <router-link 
-            v-if="isAdmin"
-            to="/editor" 
-            class="luxury-button-gold text-sm"
-          >
-            ✍️ 撰寫文章
-          </router-link>
+          <!-- 管理員專用功能 -->
+          <template v-if="isAdmin">
+            <router-link 
+              to="/editor" 
+              class="luxury-button-gold text-sm"
+            >
+              ✍️ 撰寫文章
+            </router-link>
 
-          <router-link 
-            v-if="isAdmin"
-            to="/comments" 
-            class="text-white hover:text-luxury-gold transition-colors duration-300 text-lg flex items-center"
-          >
-            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-            </svg>
-            評論審核
-            <span v-if="pendingCount > 0" class="ml-2 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full">
-              {{ pendingCount }}
-            </span>
-          </router-link>
+            <router-link 
+              to="/comments" 
+              class="text-white hover:text-luxury-gold transition-colors duration-300 text-lg flex items-center"
+            >
+              <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+              </svg>
+              評論審核
+              <span v-if="pendingCount > 0" class="ml-2 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full">
+                {{ pendingCount }}
+              </span>
+            </router-link>
+          </template>
           
+          <!-- 已登入用戶 -->
           <button 
             v-if="isAuthenticated"
             @click="logout"
@@ -48,6 +50,8 @@
           >
             登出
           </button>
+          
+          <!-- 未登入 -->
           
           <router-link 
             v-else
