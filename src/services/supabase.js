@@ -9,14 +9,11 @@ if (!supabaseUrl || !supabaseAnonKey ||
     supabaseUrl === 'https://your-project-id.supabase.co' ||
     supabaseAnonKey === 'your_supabase_anon_key' ||
     supabaseAnonKey === 'your-anon-key-here') {
-  coif (!supabase) {
-      throw new Error('Supabase 尚未配置，請檢查環境變數設置')
-    }
-    nsole.error('❌ Supabase 環境變數尚未配置！')
+  console.error('❌ Supabase 環境變數尚未配置！')
   console.error('📋 請按照以下步驟設置：')
   console.error('1. 前往 https://app.supabase.com 創建專案')
   console.error('2. 複製專案的 URL 和 API Key')
-  console.error('3. 編輯 .env 文件，填入您的憑證')
+  console.error('3. 複製 .env.example 為 .env 並填入您的憑證')
   console.error('4. 重啟開發伺服器 (npm run dev)')
   console.error('')
   console.error('詳細說明請查看：SUPABASE_SETUP.md')
@@ -30,6 +27,9 @@ export const supabase = supabaseUrl && supabaseAnonKey ?
 export const articlesApi = {
   // Get all articles
   async getAll() {
+    if (!supabase) {
+      throw new Error('Supabase 尚未配置，請檢查環境變數設置')
+    }
     const { data, error } = await supabase
       .from('articles')
       .select(`
@@ -44,6 +44,9 @@ export const articlesApi = {
 
   // Get single article
   async getById(id) {
+    if (!supabase) {
+      throw new Error('Supabase 尚未配置，請檢查環境變數設置')
+    }
     const { data, error } = await supabase
       .from('articles')
       .select(`
@@ -59,6 +62,9 @@ export const articlesApi = {
 
   // Create article
   async create(article) {
+    if (!supabase) {
+      throw new Error('Supabase 尚未配置，請檢查環境變數設置')
+    }
     const { data, error } = await supabase
       .from('articles')
       .insert([article])
@@ -71,6 +77,9 @@ export const articlesApi = {
 
   // Update article
   async update(id, article) {
+    if (!supabase) {
+      throw new Error('Supabase 尚未配置，請檢查環境變數設置')
+    }
     const { data, error } = await supabase
       .from('articles')
       .update({ ...article, updated_at: new Date().toISOString() })
@@ -84,6 +93,9 @@ export const articlesApi = {
 
   // Delete article
   async delete(id) {
+    if (!supabase) {
+      throw new Error('Supabase 尚未配置，請檢查環境變數設置')
+    }
     const { error } = await supabase
       .from('articles')
       .delete()
@@ -97,6 +109,9 @@ export const articlesApi = {
 export const photosApi = {
   // Upload photo to storage
   async upload(file, articleId) {
+    if (!supabase) {
+      throw new Error('Supabase 尚未配置，請檢查環境變數設置')
+    }
     const fileExt = file.name.split('.').pop()
     const fileName = `${articleId}/${Date.now()}.${fileExt}`
     
@@ -115,6 +130,9 @@ export const photosApi = {
 
   // Add photo record to database
   async create(photo) {
+    if (!supabase) {
+      throw new Error('Supabase 尚未配置，請檢查環境變數設置')
+    }
     const { data, error } = await supabase
       .from('photos')
       .insert([photo])
@@ -127,6 +145,9 @@ export const photosApi = {
 
   // Delete photo
   async delete(id, url) {
+    if (!supabase) {
+      throw new Error('Supabase 尚未配置，請檢查環境變數設置')
+    }
     // Delete from storage
     const path = url.split('/article-photos/')[1]
     if (path) {
