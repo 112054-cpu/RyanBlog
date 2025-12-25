@@ -6,10 +6,10 @@
           <span class="text-4xl">🔐</span>
         </div>
         <h1 class="text-3xl font-bold text-luxury-deepPurple font-playfair">
-          {{ isSignUp ? '創建管理員帳號' : '管理員登入' }}
+          {{ isSignUp ? '創建帳號' : '登入' }}
         </h1>
         <p class="text-gray-600 mt-2">
-          {{ isSignUp ? '設定您的管理員帳號密碼' : '請輸入管理員密碼' }}
+          {{ isSignUp ? '設定您的帳號密碼' : '請輸入密碼' }}
         </p>
       </div>
 
@@ -37,7 +37,7 @@
             required
             :minlength="isSignUp ? 6 : 1"
             class="w-full px-4 py-3 border-2 border-luxury-gold/30 rounded-lg focus:border-luxury-gold focus:outline-none transition-colors duration-300"
-            :placeholder="isSignUp ? '至少 6 個字符...' : '輸入管理員密碼...'"
+            :placeholder="isSignUp ? '至少 6 個字符...' : '輸入密碼...'"
           />
           <p v-if="isSignUp" class="text-sm text-gray-500 mt-1">
             密碼至少需要 6 個字符

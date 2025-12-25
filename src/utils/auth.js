@@ -1,5 +1,5 @@
 // Auth utilities for secure authentication
-import { supabase } from '../services/supabase'
+import { supabase, userProfilesApi } from '../services/supabase'
 
 export const authUtils = {
   // 檢查用戶是否已登入
@@ -21,6 +21,31 @@ export const authUtils = {
     } catch (error) {
       console.error('Get user error:', error)
       return null
+    }
+  },
+
+  // 獲取當前用戶資料（包含角色）
+  async getCurrentUserProfile() {
+    try {
+      const user = await this.getCurrentUser()
+      if (!user) return null
+      
+      const profile = await userProfilesApi.getById(user.id)
+      return profile
+    } catch (error) {
+      console.error('Get user profile error:', error)
+      return null
+    }
+  },
+
+  // 檢查用戶是否為管理員
+  async isAdmin() {
+    try {
+      const profile = await this.getCurrentUserProfile()
+      return profile?.role === 'admin'
+    } catch (error) {
+      console.error('Check admin error:', error)
+      return false
     }
   },
 

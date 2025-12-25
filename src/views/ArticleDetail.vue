@@ -71,6 +71,9 @@
       ></div>
     </div>
 
+    <!-- Comments Section -->
+    <Comments :article-id="article.id" />
+
     <!-- Social Share -->
     <div class="luxury-card">
       <SocialShare :url="currentUrl" :title="article.title" />
@@ -107,12 +110,14 @@ import { useRoute, useRouter } from 'vue-router'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
 import SocialShare from '../components/SocialShare.vue'
+import Comments from '../components/Comments.vue'
 import { articlesApi } from '../services/supabase'
 
 export default {
   name: 'ArticleDetail',
   components: {
-    SocialShare
+    SocialShare,
+    Comments
   },
   setup() {
     const route = useRoute()

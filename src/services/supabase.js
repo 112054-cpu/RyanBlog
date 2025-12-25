@@ -177,3 +177,171 @@ export const photosApi = {
     if (error) throw error
   }
 }
+
+// User Profiles API
+export const userProfilesApi = {
+  // Get user profile by user ID
+  async getById(userId) {
+    if (!supabase) {
+      throw new Error('Supabase 尚未配置，請檢查環境變數設置')
+    }
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .select('*')
+      .eq('id', userId)
+      .single()
+    
+    if (error) throw error
+    return data
+  },
+
+  // Get current user profile
+  async getCurrent() {
+    if (!supabase) {
+      throw new Error('Supabase 尚未配置，請檢查環境變數設置')
+    }
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('未登入')
+    
+    return await this.getById(user.id)
+  },
+
+  // Update user profile
+  async update(userId, updates) {
+    if (!supabase) {
+      throw new Error('Supabase 尚未配置，請檢查環境變數設置')
+    }
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .update(updates)
+      .eq('id', userId)
+      .select()
+      .single()
+    
+    if (error) throw error
+    return data
+  }
+}
+
+// Comments API
+export const commentsApi = {
+  // Get approved comments for an article
+  async getByArticleId(articleId) {
+    if (!supabase) {
+      throw new Error('Supabase 尚未配置，請檢查環境變數設置')
+    }
+    const { data, error } = await supabase
+      .from('comments')
+      .select(`
+        *,
+        user_profiles (
+          display_name,
+          email
+        )
+      `)
+      .eq('article_id', articleId)
+      .eq('status', 'approved')
+      .order('created_at', { ascending: true })
+    
+    if (error) throw error
+    return data
+  },
+
+  // Get all comments (admin only)
+  async getAll() {
+    if (!supabase) {
+      throw new Error('Supabase 尚未配置，請檢查環境變數設置')
+    }
+    const { data, error } = await supabase
+      .from('comments')
+      .select(`
+        *,
+        user_profiles (
+          display_name,
+          email
+        ),
+        articles (
+          title
+        )
+      `)
+      .order('created_at', { ascending: false })
+    
+    if (error) throw error
+    return data
+  },
+
+  // Get pending comments (admin only)
+  async getPending() {
+    if (!supabase) {
+      throw new Error('Supabase 尚未配置，請檢查環境變數設置')
+    }
+    const { data, error } = await supabase
+      .from('comments')
+      .select(`
+        *,
+        user_profiles (
+          display_name,
+          email
+        ),
+        articles (
+          title
+        )
+      `)
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false })
+    
+    if (error) throw error
+    return data
+  },
+
+  // Create comment
+  async create(comment) {
+    if (!supabase) {
+      throw new Error('Supabase 尚未配置，請檢查環境變數設置')
+    }
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('請先登入才能留言')
+    
+    const { data, error } = await supabase
+      .from('comments')
+      .insert([{
+        ...comment,
+        user_id: user.id,
+        status: 'pending'
+      }])
+      .select()
+      .single()
+    
+    if (error) throw error
+    return data
+  },
+
+  // Update comment status (admin only)
+  async updateStatus(commentId, status) {
+    if (!supabase) {
+      throw new Error('Supabase 尚未配置，請檢查環境變數設置')
+    }
+    const { data, error } = await supabase
+      .from('comments')
+      .update({ status })
+      .eq('id', commentId)
+      .select()
+      .single()
+    
+    if (error) throw error
+    return data
+  },
+
+  // Delete comment (admin only)
+  async delete(commentId) {
+    if (!supabase) {
+      throw new Error('Supabase 尚未配置，請檢查環境變數設置')
+    }
+    const { error } = await supabase
+      .from('comments')
+      .delete()
+      .eq('id', commentId)
+    
+    if (error) throw error
+  }
+}
