@@ -34,7 +34,7 @@
       <div class="bg-gradient-to-r from-luxury-cream to-white p-6 rounded-lg shadow-md text-center">
         <p class="text-gray-700 mb-4">請先登入才能留言</p>
         <router-link
-          to="/admin"
+          to="/login"
           class="inline-block px-6 py-2 bg-luxury-purple text-white rounded-lg hover:bg-luxury-purple-dark transition-all duration-300 shadow-md hover:shadow-lg"
         >
           前往登入

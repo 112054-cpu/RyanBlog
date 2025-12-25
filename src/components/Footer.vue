@@ -18,7 +18,7 @@
               </router-link>
             </li>
             <li>
-              <router-link to="/admin" class="hover:text-luxury-gold transition-colors duration-300">
+              <router-link to="/login" class="hover:text-luxury-gold transition-colors duration-300">
                 管理後台
               </router-link>
             </li>

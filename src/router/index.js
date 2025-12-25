@@ -32,9 +32,13 @@ const routes = [
     meta: { requiresAuth: true, requiresAdmin: true }
   },
   {
-    path: '/admin',
-    name: 'AdminLogin',
+    path: '/login',
+    name: 'Login',
     component: AdminLogin
+  },
+  {
+    path: '/admin',
+    redirect: '/login'
   },
   {
     path: '/comments',
@@ -54,7 +58,7 @@ router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth) {
     const isValid = await authUtils.validateToken()
     if (!isValid) {
-      next('/admin')
+      next('/login')
       return
     }
     

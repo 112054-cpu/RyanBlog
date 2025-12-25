@@ -55,7 +55,7 @@
           
           <router-link 
             v-else
-            to="/admin" 
+            to="/login" 
             class="text-white hover:text-luxury-gold transition-colors duration-300 text-lg"
           >
             登入
