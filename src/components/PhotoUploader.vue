@@ -1,9 +1,14 @@
 <template>
   <div class="space-y-4">
     <div class="flex items-center justify-between">
-      <h3 class="text-xl font-playfair font-bold text-luxury-deepPurple">
-        文章照片 ({{ photos.length }}/10)
-      </h3>
+      <div>
+        <h3 class="text-xl font-playfair font-bold text-luxury-deepPurple">
+          文章照片 ({{ photos.length }}/10)
+        </h3>
+        <p class="text-sm text-gray-500 mt-1">
+          支援任何圖片格式，自動轉換為 JPG 並壓縮至 1MB 以下
+        </p>
+      </div>
       
       <label 
         v-if="photos.length < 10"
@@ -22,7 +27,8 @@
 
     <div v-if="uploading" class="text-center py-4">
       <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-luxury-gold border-t-transparent"></div>
-      <p class="mt-2 text-gray-600">壓縮並上傳中...</p>
+      <p class="mt-2 text-gray-600">正在轉換為 JPG 並壓縮至 1MB 以下...</p>
+      <p class="text-sm text-gray-500">{{ uploadProgress }}</p>
     </div>
 
     <div v-if="error" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
@@ -51,11 +57,16 @@
         <div class="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
           順序 {{ index + 1 }}
         </div>
+        
+        <div v-if="photo.file" class="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded">
+          JPG
+        </div>
       </div>
     </div>
 
     <p v-if="photos.length === 0" class="text-center text-gray-400 py-8">
-      尚未上傳照片
+      尚未上傳照片<br>
+      <span class="text-xs">支援 JPG、PNG、WebP、GIF、BMP 等格式</span>
     </p>
   </div>
 </template>
@@ -77,6 +88,7 @@ export default {
     const photos = ref(props.modelValue || [])
     const uploading = ref(false)
     const error = ref('')
+    const uploadProgress = ref('')
 
     const handleFileSelect = async (event) => {
       const files = Array.from(event.target.files)
@@ -90,11 +102,14 @@ export default {
       error.value = ''
 
       try {
-        for (const file of files) {
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i]
+          uploadProgress.value = `處理第 ${i + 1} / ${files.length} 張圖片...`
+          
           // Validate file
           validateImageFile(file)
           
-          // Compress image
+          // Compress and convert to JPG
           const compressedFile = await compressImage(file)
           
           // Create preview URL
@@ -107,6 +122,7 @@ export default {
           })
         }
         
+        uploadProgress.value = '完成！'
         emit('update:modelValue', photos.value)
       } catch (err) {
         error.value = err.message
@@ -129,6 +145,7 @@ export default {
       photos,
       uploading,
       error,
+      uploadProgress,
       handleFileSelect,
       removePhoto
     }
