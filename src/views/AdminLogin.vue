@@ -87,7 +87,7 @@
 <script>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { supabase } from '../services/supabase'
+import { supabase, userProfilesApi } from '../services/supabase'
 
 export default {
   name: 'AdminLogin',
@@ -149,8 +149,20 @@ export default {
           localStorage.setItem('supabase_token', data.session.access_token)
           window.dispatchEvent(new Event('storage'))
           success.value = '✅ 帳號創建成功！正在跳轉...'
-          setTimeout(() => {
-            router.push('/editor')
+          
+          // 檢查用戶角色並跳轉到相應頁面
+          setTimeout(async () => {
+            try {
+              const profile = await userProfilesApi.getById(data.user.id)
+              if (profile.role === 'admin') {
+                router.push('/editor')
+              } else {
+                router.push('/')
+              }
+            } catch (err) {
+              // 如果獲取資料失敗，默認跳轉到首頁
+              router.push('/')
+            }
           }, 1000)
         } else {
           // 帳號創建成功但狀態不明確，引導用戶登入
@@ -195,8 +207,21 @@ export default {
         localStorage.setItem('supabase_token', data.session.access_token)
         window.dispatchEvent(new Event('storage'))
         success.value = '✅ 登入成功！'
-        setTimeout(() => {
-          router.push('/editor')
+        
+        // 根據用戶角色跳轉到不同頁面
+        setTimeout(async () => {
+          try {
+            const profile = await userProfilesApi.getById(data.user.id)
+            if (profile.role === 'admin') {
+              router.push('/editor')
+            } else {
+              router.push('/')
+            }
+          } catch (err) {
+            console.error('獲取用戶資料失敗:', err)
+            // 如果獲取資料失敗，默認跳轉到首頁
+            router.push('/')
+          }
         }, 500)
       } catch (err) {
         console.error('登入錯誤:', err)
