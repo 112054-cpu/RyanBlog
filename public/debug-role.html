@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>用户角色调试工具</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1 { color: #4A148C; }
+    h2 { color: #6A1B9A; margin-top: 0; }
+    pre {
+      background: #f0f0f0;
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+    button {
+      background: #4A148C;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    button:hover {
+      background: #6A1B9A;
+    }
+    .error { color: red; }
+    .success { color: green; }
+  </style>
+</head>
+<body>
+  <h1>🔍 用户角色调试工具</h1>
+  
+  <div class="card">
+    <h2>当前登录状态</h2>
+    <button onclick="checkAuth()">检查登录状态</button>
+    <button onclick="checkRole()">检查用户角色</button>
+    <button onclick="clearCache()">清除缓存并刷新</button>
+    <pre id="authResult">点击按钮开始检查...</pre>
+  </div>
+
+  <div class="card">
+    <h2>操作说明</h2>
+    <ol>
+      <li>确保已在主站登录 (stephexx@gmail.com)</li>
+      <li>点击「检查登录状态」查看 Supabase 会话</li>
+      <li>点击「检查用户角色」查看角色信息</li>
+      <li>如果角色不正确，先执行 SQL 修正，然后点击「清除缓存并刷新」</li>
+    </ol>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+    const supabaseUrl = 'https://sefyuwnxedbcxmvalits.supabase.co'
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlZnl1d254ZWRiY3htdmFsaXRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzUxMDUwMDMsImV4cCI6MjA1MDY4MTAwM30.xygoPlX2TlDhT4xn93cOIPsR1_6SvMz50_0yIVjRPyM'
+    
+    const supabase = createClient(supabaseUrl, supabaseKey)
+
+    window.checkAuth = async function() {
+      const result = document.getElementById('authResult')
+      result.innerHTML = '检查中...'
+      
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession()
+        
+        if (error) throw error
+        
+        if (session) {
+          result.innerHTML = `<div class="success">✓ 已登录</div>
+<strong>用户邮箱:</strong> ${session.user.email}
+<strong>用户 ID:</strong> ${session.user.id}
+<strong>Token 过期时间:</strong> ${new Date(session.expires_at * 1000).toLocaleString()}`
+        } else {
+          result.innerHTML = '<div class="error">✗ 未登录</div>请先在主站登录'
+        }
+      } catch (err) {
+        result.innerHTML = `<div class="error">错误: ${err.message}</div>`
+      }
+    }
+
+    window.checkRole = async function() {
+      const result = document.getElementById('authResult')
+      result.innerHTML = '检查中...'
+      
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        
+        if (!user) {
+          result.innerHTML = '<div class="error">✗ 未登录</div>'
+          return
+        }
+
+        const { data: profile, error } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single()
+
+        if (error) throw error
+
+        const isAdmin = profile.role === 'admin'
+        
+        result.innerHTML = `<div class="${isAdmin ? 'success' : ''}">
+<strong>用户邮箱:</strong> ${profile.email}
+<strong>显示名称:</strong> ${profile.display_name}
+<strong>用户角色:</strong> ${profile.role}
+<strong>是否管理员:</strong> ${isAdmin ? '是 ✓' : '否'}
+<strong>创建时间:</strong> ${new Date(profile.created_at).toLocaleString()}
+</div>
+
+<hr>
+<strong>完整 Profile 数据:</strong>
+${JSON.stringify(profile, null, 2)}`
+      } catch (err) {
+        result.innerHTML = `<div class="error">错误: ${err.message}</div>
+可能原因：
+1. user_profiles 表中没有该用户记录
+2. RLS 策略阻止了查询
+3. 网络连接问题`
+      }
+    }
+
+    window.clearCache = function() {
+      localStorage.clear()
+      sessionStorage.clear()
+      alert('缓存已清除！页面将刷新...')
+      window.location.reload()
+    }
+  </script>
+</body>
+</html>
