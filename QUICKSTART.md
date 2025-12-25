@@ -74,6 +74,7 @@ CREATE POLICY "Allow public delete" ON photos FOR DELETE USING (true);
 1. 在 Supabase 點擊左下角 **齒輪圖示 (Settings)**
 2. 點擊 **"API"**
 3. 複製兩個值：
+
    - **Project URL** (例如：`https://abcdefgh.supabase.co`)
    - **anon public** key (一長串字符)
 
@@ -110,29 +111,38 @@ VITE_SUPABASE_ANON_KEY=你的長長的key
 ## ❓ 常見問題
 
 ### Q: 我在哪裡找到 `.env` 文件？
+
 A: 它在專案根目錄：`/Users/steven/Documents/RyanProject/.env`
 
 ### Q: 修改 `.env` 後沒有效果？
+
 A: 記得要重啟開發伺服器：
+
 ```bash
 # 在終端機按 Ctrl+C，然後
 npm run dev
 ```
 
 ### Q: SQL 執行失敗？
+
 A: 確保：
+
 1. 一次複製貼上完整的 SQL
 2. 點擊 "Run" 按鈕
 3. 如果出錯，嘗試先執行 `DROP TABLE IF EXISTS articles, photos CASCADE;` 然後重試
 
 ### Q: Storage bucket 創建失敗？
+
 A: 確保：
+
 1. Bucket 名稱是 `article-photos`（沒有空格）
 2. 勾選了 "Public bucket"
 3. 如果已存在，直接使用即可
 
 ### Q: 照片上傳失敗？
+
 A: 在 Supabase Storage 中：
+
 1. 選擇 `article-photos` bucket
 2. 點擊右上角三個點 → "Policies"
 3. 點擊 "New Policy"
