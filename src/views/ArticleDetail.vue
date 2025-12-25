@@ -64,9 +64,10 @@
 
     <!-- Article Content -->
     <div class="luxury-card prose prose-lg max-w-none">
-      <div class="whitespace-pre-wrap text-gray-700 leading-relaxed">
-        {{ article.content }}
-      </div>
+      <div 
+        class="text-gray-700 leading-relaxed markdown-content"
+        v-html="renderMarkdown(article.content)"
+      ></div>
     </div>
 
     <!-- Social Share -->
@@ -102,6 +103,7 @@
 <script>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { marked } from 'marked'
 import SocialShare from '../components/SocialShare.vue'
 import { articlesApi } from '../services/supabase'
 
@@ -179,6 +181,18 @@ export default {
       return 'col-span-1 md:col-span-1 row-span-1'
     }
 
+    const renderMarkdown = (content) => {
+      if (!content) return ''
+      
+      // 配置 marked
+      marked.setOptions({
+        breaks: true,
+        gfm: true
+      })
+      
+      return marked(content)
+    }
+
     const editArticle = () => {
       router.push(`/editor/${article.value.id}`)
     }
@@ -219,6 +233,7 @@ export default {
       lightboxImage,
       formatDate,
       getPhotoClass,
+      renderMarkdown,
       editArticle,
       deleteArticle,
       openLightbox,

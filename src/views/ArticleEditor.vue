@@ -43,14 +43,31 @@
         <div>
           <label class="block text-lg font-semibold text-gray-700 mb-2">
             文章內容 <span class="text-red-500">*</span>
+            <span class="text-sm text-gray-500 ml-2">（支援 Markdown 格式）</span>
           </label>
           <textarea 
             v-model="form.content"
             required
-            rows="12"
-            class="w-full px-4 py-3 border-2 border-luxury-gold/30 rounded-lg focus:border-luxury-gold focus:outline-none transition-colors duration-300 resize-y"
-            placeholder="撰寫文章內容..."
+            rows="15"
+            class="w-full px-4 py-3 border-2 border-luxury-gold/30 rounded-lg focus:border-luxury-gold focus:outline-none transition-colors duration-300 resize-y font-mono text-sm"
+            placeholder="# 標題\n\n撰寫文章內容（支援 Markdown）...\n\n## 副標題\n\n- 列表項目 1\n- 列表項目 2\n\n**粗體** *斜體* [連結](https://example.com)"
           ></textarea>
+          <div class="mt-2 text-sm text-gray-500">
+            <details>
+              <summary class="cursor-pointer hover:text-luxury-gold">📝 Markdown 語法提示</summary>
+              <div class="mt-2 p-3 bg-gray-50 rounded-lg">
+                <code># 標題</code> → 大標題<br>
+                <code>## 副標題</code> → 次標題<br>
+                <code>**粗體**</code> → <strong>粗體</strong><br>
+                <code>*斜體*</code> → <em>斜體</em><br>
+                <code>[連結](網址)</code> → 超連結<br>
+                <code>- 項目</code> → 列表<br>
+                <code>1. 項目</code> → 編號列表<br>
+                <code>`程式碼`</code> → 行內程式碼<br>
+                <code>```程式碼區塊```</code> → 程式碼區塊
+              </div>
+            </details>
+          </div>
         </div>
 
         <!-- Photos -->

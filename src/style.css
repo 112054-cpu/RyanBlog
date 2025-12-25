@@ -70,3 +70,80 @@
 .fade-in {
   animation: fadeIn 0.6s ease-out;
 }
+
+/* Markdown Content Styling */
+.markdown-content {
+  @apply leading-relaxed;
+}
+
+.markdown-content h1 {
+  @apply text-3xl font-bold text-luxury-deepPurple mb-4 mt-6 font-playfair;
+}
+
+.markdown-content h2 {
+  @apply text-2xl font-bold text-luxury-purple mb-3 mt-5 font-playfair;
+}
+
+.markdown-content h3 {
+  @apply text-xl font-semibold text-luxury-purple mb-2 mt-4;
+}
+
+.markdown-content p {
+  @apply mb-4 text-gray-700;
+}
+
+.markdown-content ul {
+  @apply list-disc list-inside mb-4 space-y-2;
+}
+
+.markdown-content ol {
+  @apply list-decimal list-inside mb-4 space-y-2;
+}
+
+.markdown-content li {
+  @apply text-gray-700;
+}
+
+.markdown-content a {
+  @apply text-luxury-gold hover:text-luxury-rose underline transition-colors duration-300;
+}
+
+.markdown-content strong {
+  @apply font-bold text-luxury-deepPurple;
+}
+
+.markdown-content em {
+  @apply italic text-gray-600;
+}
+
+.markdown-content code {
+  @apply bg-gray-100 px-2 py-1 rounded text-sm font-mono text-luxury-purple;
+}
+
+.markdown-content pre {
+  @apply bg-gray-900 text-gray-100 p-4 rounded-lg mb-4 overflow-x-auto;
+}
+
+.markdown-content pre code {
+  @apply bg-transparent text-gray-100 p-0;
+}
+
+.markdown-content blockquote {
+  @apply border-l-4 border-luxury-gold pl-4 italic text-gray-600 mb-4;
+}
+
+.markdown-content hr {
+  @apply border-t-2 border-luxury-gold/30 my-6;
+}
+
+.markdown-content table {
+  @apply w-full border-collapse mb-4;
+}
+
+.markdown-content th {
+  @apply bg-luxury-gold/10 border border-luxury-gold/30 px-4 py-2 text-left font-semibold;
+}
+
+.markdown-content td {
+  @apply border border-gray-300 px-4 py-2;
+}
