@@ -7,6 +7,7 @@ const ArticleDetail = () => import('../views/ArticleDetail.vue')
 const ArticleEditor = () => import('../views/ArticleEditor.vue')
 const AdminLogin = () => import('../views/AdminLogin.vue')
 const CommentModeration = () => import('../views/CommentModeration.vue')
+const AuthCallback = () => import('../views/AuthCallback.vue')
 
 const routes = [
   {
@@ -35,6 +36,11 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: AdminLogin
+  },
+  {
+    path: '/auth/callback',
+    name: 'AuthCallback',
+    component: AuthCallback
   },
   {
     path: '/admin',

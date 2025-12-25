@@ -34,7 +34,7 @@
       </div>
 
       <!-- Admin Actions -->
-      <div v-if="isAuthenticated" class="mt-6 flex justify-center space-x-4">
+      <div v-if="isAdmin" class="mt-6 flex justify-center space-x-4">
         <button @click="editArticle" class="luxury-button-gold">
           ✏️ 編輯
         </button>
@@ -112,6 +112,7 @@ import DOMPurify from 'dompurify'
 import SocialShare from '../components/SocialShare.vue'
 import Comments from '../components/Comments.vue'
 import { articlesApi } from '../services/supabase'
+import { authUtils } from '../utils/auth'
 
 export default {
   name: 'ArticleDetail',
@@ -125,7 +126,7 @@ export default {
     const article = ref(null)
     const loading = ref(true)
     const error = ref('')
-    const isAuthenticated = ref(false)
+    const isAdmin = ref(false)
     const lightboxImage = ref(null)
 
     const currentUrl = computed(() => window.location.href)
@@ -231,8 +232,8 @@ export default {
       lightboxImage.value = null
     }
 
-    onMounted(() => {
-      isAuthenticated.value = !!localStorage.getItem('isAuthenticated')
+    onMounted(async () => {
+      isAdmin.value = await authUtils.isAdmin()
       loadArticle()
     })
 
@@ -240,7 +241,7 @@ export default {
       article,
       loading,
       error,
-      isAuthenticated,
+      isAdmin,
       currentUrl,
       sortedPhotos,
       lightboxImage,

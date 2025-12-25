@@ -232,18 +232,34 @@ export const commentsApi = {
     }
     const { data, error } = await supabase
       .from('comments')
-      .select(`
-        *,
-        user_profiles (
-          display_name,
-          email
-        )
-      `)
+      .select('*')
       .eq('article_id', articleId)
       .eq('status', 'approved')
       .order('created_at', { ascending: true })
     
-    if (error) throw error
+    if (error) {
+      console.error('getByArticleId 錯誤:', error)
+      throw error
+    }
+    
+    // 補充用戶信息
+    if (data && data.length > 0) {
+      const commentsWithProfiles = await Promise.all(
+        data.map(async (comment) => {
+          const { data: profile } = await supabase
+            .from('user_profiles')
+            .select('display_name, email')
+            .eq('id', comment.user_id)
+            .single()
+          return {
+            ...comment,
+            user_profiles: profile
+          }
+        })
+      )
+      return commentsWithProfiles
+    }
+    
     return data
   },
 
@@ -252,21 +268,58 @@ export const commentsApi = {
     if (!supabase) {
       throw new Error('Supabase 尚未配置，請檢查環境變數設置')
     }
+    
+    // 獲取當前用戶信息
+    const { data: { user } } = await supabase.auth.getUser()
+    console.log('當前用戶:', user?.email, 'ID:', user?.id)
+    
+    // 檢查用戶角色
+    if (user) {
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+      console.log('用戶角色:', profile?.role)
+    }
+    
     const { data, error } = await supabase
       .from('comments')
-      .select(`
-        *,
-        user_profiles (
-          display_name,
-          email
-        ),
-        articles (
-          title
-        )
-      `)
+      .select('*')
       .order('created_at', { ascending: false })
     
-    if (error) throw error
+    console.log('查詢結果:', { data, error, count: data?.length || 0 })
+    
+    if (error) {
+      console.error('查詢錯誤詳情:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+        fullError: error
+      })
+      throw error
+    }
+    
+    // 如果成功獲取評論，再補充用戶信息
+    if (data && data.length > 0) {
+      console.log('成功獲取評論，正在補充用戶信息...')
+      const commentsWithProfiles = await Promise.all(
+        data.map(async (comment) => {
+          const { data: profile } = await supabase
+            .from('user_profiles')
+            .select('display_name, email')
+            .eq('id', comment.user_id)
+            .single()
+          return {
+            ...comment,
+            user_profiles: profile
+          }
+        })
+      )
+      return commentsWithProfiles
+    }
+    
     return data
   },
 
@@ -277,20 +330,39 @@ export const commentsApi = {
     }
     const { data, error } = await supabase
       .from('comments')
-      .select(`
-        *,
-        user_profiles (
-          display_name,
-          email
-        ),
-        articles (
-          title
-        )
-      `)
+      .select('*')
       .eq('status', 'pending')
       .order('created_at', { ascending: false })
     
-    if (error) throw error
+    if (error) {
+      console.error('getPending 錯誤詳情:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+        fullError: error
+      })
+      throw error
+    }
+    
+    // 補充用戶信息
+    if (data && data.length > 0) {
+      const commentsWithProfiles = await Promise.all(
+        data.map(async (comment) => {
+          const { data: profile } = await supabase
+            .from('user_profiles')
+            .select('display_name, email')
+            .eq('id', comment.user_id)
+            .single()
+          return {
+            ...comment,
+            user_profiles: profile
+          }
+        })
+      )
+      return commentsWithProfiles
+    }
+    
     return data
   },
 

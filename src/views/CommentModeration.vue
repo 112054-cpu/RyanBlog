@@ -210,7 +210,11 @@ onMounted(async () => {
 async function loadComments() {
   loading.value = true
   try {
-    comments.value = await commentsApi.getAll()
+    console.log('開始載入評論...')
+    const data = await commentsApi.getAll()
+    console.log('載入的評論數據:', data)
+    console.log('評論數量:', data?.length || 0)
+    comments.value = data
   } catch (err) {
     console.error('載入留言失敗:', err)
     error.value = err.message || '載入失敗'
