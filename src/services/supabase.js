@@ -3,6 +3,10 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
+console.log('🔍 Supabase 配置檢查:')
+console.log('URL 已設定:', !!supabaseUrl, supabaseUrl ? `(${supabaseUrl.substring(0, 30)}...)` : '(未設定)')
+console.log('Key 已設定:', !!supabaseAnonKey, supabaseAnonKey ? `(${supabaseAnonKey.substring(0, 20)}...)` : '(未設定)')
+
 // Validate environment variables
 if (!supabaseUrl || !supabaseAnonKey || 
     supabaseUrl === 'your_supabase_project_url' || 
