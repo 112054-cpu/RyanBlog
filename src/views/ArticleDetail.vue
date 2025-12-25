@@ -1,15 +1,16 @@
 <template>
-  <div v-if="loading" class="text-center py-12">
-    <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-luxury-gold border-t-transparent"></div>
-    <p class="mt-4 text-gray-600">載入文章中...</p>
-  </div>
+  <div>
+    <div v-if="loading" class="text-center py-12">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-luxury-gold border-t-transparent"></div>
+      <p class="mt-4 text-gray-600">載入文章中...</p>
+    </div>
 
-  <div v-else-if="error" class="luxury-card bg-red-50 border-red-200">
-    <p class="text-red-700">{{ error }}</p>
-    <router-link to="/" class="luxury-button mt-4 inline-block">返回首頁</router-link>
-  </div>
+    <div v-else-if="error" class="luxury-card bg-red-50 border-red-200">
+      <p class="text-red-700">{{ error }}</p>
+      <router-link to="/" class="luxury-button mt-4 inline-block">返回首頁</router-link>
+    </div>
 
-  <article v-else class="max-w-4xl mx-auto space-y-8">
+    <article v-else class="max-w-4xl mx-auto space-y-8">
     <!-- Article Header -->
     <div class="luxury-card text-center">
       <h1 class="text-4xl md:text-5xl font-bold text-luxury-deepPurple mb-4 font-playfair">
@@ -45,15 +46,19 @@
 
     <!-- Article Photos -->
     <div v-if="article.photos && article.photos.length > 0" class="luxury-card">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <img 
-          v-for="photo in sortedPhotos" 
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div 
+          v-for="(photo, index) in sortedPhotos" 
           :key="photo.id"
-          :src="photo.url" 
-          :alt="article.title"
-          class="w-full h-64 object-cover rounded-lg luxury-border cursor-pointer hover:scale-105 transition-transform duration-300"
-          @click="openLightbox(photo.url)"
-        />
+          :class="getPhotoClass(index)"
+        >
+          <img 
+            :src="photo.url" 
+            :alt="article.title"
+            class="w-full h-full object-cover rounded-lg luxury-border cursor-pointer hover:scale-105 transition-transform duration-300"
+            @click="openLightbox(photo.url)"
+          />
+        </div>
       </div>
     </div>
 
@@ -90,6 +95,7 @@
     >
       ✕
     </button>
+  </div>
   </div>
 </template>
 
@@ -144,6 +150,35 @@ export default {
       })
     }
 
+    const getPhotoClass = (index) => {
+      // 對稱排列模式：
+      // 1張：佔據全部 4 格 (col-span-4)
+      // 2張：各佔 2 格 (col-span-2)
+      // 3張：第1張佔 2 格，第2-3張各佔 2 格
+      // 4張：各佔 1 格 (預設)
+      // 5張+：第1張佔 2 格置中，其餘對稱排列
+      
+      const total = sortedPhotos.value.length
+      
+      if (total === 1) {
+        return 'col-span-2 md:col-span-4 row-span-2'
+      } else if (total === 2) {
+        return 'col-span-1 md:col-span-2 row-span-2'
+      } else if (total === 3) {
+        if (index === 0) return 'col-span-2 md:col-span-4 row-span-2'
+        return 'col-span-1 md:col-span-2 row-span-1'
+      } else if (total === 5) {
+        if (index === 0) return 'col-span-2 md:col-span-4 row-span-2'
+        return 'col-span-1 md:col-span-1 row-span-1'
+      } else if (total >= 6) {
+        if (index === 0) return 'col-span-2 md:col-span-2 row-span-2'
+        return 'col-span-1 md:col-span-1 row-span-1'
+      }
+      
+      // 4張或其他：預設每張佔 1 格
+      return 'col-span-1 md:col-span-1 row-span-1'
+    }
+
     const editArticle = () => {
       router.push(`/editor/${article.value.id}`)
     }
@@ -183,6 +218,7 @@ export default {
       sortedPhotos,
       lightboxImage,
       formatDate,
+      getPhotoClass,
       editArticle,
       deleteArticle,
       openLightbox,

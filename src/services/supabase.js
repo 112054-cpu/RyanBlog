@@ -119,7 +119,15 @@ export const photosApi = {
       .from('article-photos')
       .upload(fileName, file)
     
-    if (error) throw error
+    if (error) {
+      console.error('照片上傳錯誤:', error)
+      
+      if (error.message.includes('Bucket not found')) {
+        throw new Error('儲存空間未設置。請到 Supabase Dashboard > Storage 創建名為 "article-photos" 的公開 bucket')
+      }
+      
+      throw new Error(`照片上傳失敗: ${error.message}`)
+    }
     
     const { data: { publicUrl } } = supabase.storage
       .from('article-photos')
