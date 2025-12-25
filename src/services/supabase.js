@@ -9,14 +9,30 @@ if (!supabaseUrl || !supabaseAnonKey ||
     supabaseUrl === 'https://your-project-id.supabase.co' ||
     supabaseAnonKey === 'your_supabase_anon_key' ||
     supabaseAnonKey === 'your-anon-key-here') {
+  
+  const isProduction = import.meta.env.PROD
+  const deploymentPlatform = window.location.hostname.includes('vercel.app') ? 'Vercel' : 
+                             window.location.hostname.includes('netlify.app') ? 'Netlify' : 
+                             '生產環境'
+  
   console.error('❌ Supabase 環境變數尚未配置！')
-  console.error('📋 請按照以下步驟設置：')
-  console.error('1. 前往 https://app.supabase.com 創建專案')
-  console.error('2. 複製專案的 URL 和 API Key')
-  console.error('3. 複製 .env.example 為 .env 並填入您的憑證')
-  console.error('4. 重啟開發伺服器 (npm run dev)')
-  console.error('')
-  console.error('詳細說明請查看：SUPABASE_SETUP.md')
+  
+  if (isProduction) {
+    console.error(`\n📦 檢測到 ${deploymentPlatform} 部署環境`)
+    console.error('🔧 請在部署平台設置環境變數：')
+    console.error('   VITE_SUPABASE_URL = https://sefyuwnxedbcxmvalits.supabase.co')
+    console.error('   VITE_SUPABASE_ANON_KEY = (從 Supabase Dashboard 複製)')
+    console.error('')
+    console.error(`📖 詳細步驟請查看：docs/VERCEL_DEPLOYMENT.md`)
+  } else {
+    console.error('\n📋 本地開發環境設置步驟：')
+    console.error('1. 前往 https://app.supabase.com 創建專案')
+    console.error('2. 複製專案的 URL 和 API Key')
+    console.error('3. 複製 .env.example 為 .env 並填入您的憑證')
+    console.error('4. 重啟開發伺服器 (npm run dev)')
+    console.error('')
+    console.error('📖 詳細說明請查看：docs/SUPABASE_SETUP.md')
+  }
 }
 
 export const supabase = supabaseUrl && supabaseAnonKey ? 

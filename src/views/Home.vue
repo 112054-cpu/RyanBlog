@@ -111,7 +111,17 @@ export default {
         articles.value = await articlesApi.getAll()
       } catch (err) {
         console.error('Error loading articles:', err)
-        error.value = '載入文章失敗，請確認 Supabase 連線設定'
+        
+        // 檢測部署環境
+        const isVercel = window.location.hostname.includes('vercel.app')
+        const isNetlify = window.location.hostname.includes('netlify.app')
+        
+        if (isVercel || isNetlify) {
+          const platform = isVercel ? 'Vercel' : 'Netlify'
+          error.value = `載入文章失敗。請在 ${platform} 設置環境變數 VITE_SUPABASE_URL 和 VITE_SUPABASE_ANON_KEY。查看 docs/VERCEL_DEPLOYMENT.md 了解詳細步驟。`
+        } else {
+          error.value = '載入文章失敗，請確認 Supabase 連線設定。查看 docs/SUPABASE_SETUP.md 了解設置步驟。'
+        }
       } finally {
         loading.value = false
       }
