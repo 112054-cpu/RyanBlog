@@ -71,16 +71,24 @@ CREATE POLICY "Admins can view all comments"
     )
   );
 
--- 已登录用户可以提交评论
+-- 用户可以查看自己的评论
+DROP POLICY IF EXISTS "Users can view own comments" ON public.comments;
+CREATE POLICY "Users can view own comments" 
+  ON public.comments FOR SELECT 
+  USING (auth.uid() = user_id);
+
+-- 已认证用户可以插入评论
 DROP POLICY IF EXISTS "Authenticated users can insert comments" ON public.comments;
 CREATE POLICY "Authenticated users can insert comments" 
   ON public.comments FOR INSERT 
+  TO authenticated
   WITH CHECK (auth.uid() = user_id);
 
 -- 管理员可以更新评论状态
 DROP POLICY IF EXISTS "Admins can update comments" ON public.comments;
 CREATE POLICY "Admins can update comments" 
   ON public.comments FOR UPDATE 
+  TO authenticated
   USING (
     EXISTS (
       SELECT 1 FROM public.user_profiles 
@@ -92,6 +100,7 @@ CREATE POLICY "Admins can update comments"
 DROP POLICY IF EXISTS "Admins can delete comments" ON public.comments;
 CREATE POLICY "Admins can delete comments" 
   ON public.comments FOR DELETE 
+  TO authenticated
   USING (
     EXISTS (
       SELECT 1 FROM public.user_profiles 
