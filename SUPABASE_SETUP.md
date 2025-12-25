@@ -85,6 +85,7 @@ CREATE TRIGGER update_articles_updated_at
 ## Storage Bucket 設置
 
 ### 1. 創建 Bucket
+
 - 名稱: `article-photos`
 - 類型: Public bucket
 - 允許的文件類型: image/jpeg, image/png, image/webp
@@ -123,24 +124,25 @@ USING (bucket_id = 'article-photos');
 
 ```sql
 -- 檢查表是否創建成功
-SELECT table_name 
-FROM information_schema.tables 
-WHERE table_schema = 'public' 
+SELECT table_name
+FROM information_schema.tables
+WHERE table_schema = 'public'
   AND table_name IN ('articles', 'photos');
 
 -- 檢查 RLS 是否啟用
-SELECT tablename, rowsecurity 
-FROM pg_tables 
-WHERE schemaname = 'public' 
+SELECT tablename, rowsecurity
+FROM pg_tables
+WHERE schemaname = 'public'
   AND tablename IN ('articles', 'photos');
 
 -- 檢查策略是否存在
-SELECT schemaname, tablename, policyname 
-FROM pg_policies 
+SELECT schemaname, tablename, policyname
+FROM pg_policies
 WHERE tablename IN ('articles', 'photos');
 ```
 
 預期結果：
+
 - 應該看到 `articles` 和 `photos` 兩個表
 - `rowsecurity` 應該為 `true`
 - 應該看到多個策略（每個表至少 3-4 個）
@@ -150,7 +152,7 @@ WHERE tablename IN ('articles', 'photos');
 ```sql
 -- 插入測試文章
 INSERT INTO articles (title, content, excerpt)
-VALUES 
+VALUES
   (
     '歡迎來到 Ryan''s Blog',
     '這是我的第一篇文章！在這裡，我將分享生活、技術和各種有趣的內容。期待與大家一起成長。',
@@ -181,6 +183,7 @@ VITE_SUPABASE_ANON_KEY=<anon public key>
 ## 故障排除
 
 ### 問題：無法讀取文章
+
 ```sql
 -- 檢查 RLS 策略
 SELECT * FROM pg_policies WHERE tablename = 'articles';
@@ -193,11 +196,13 @@ CREATE POLICY "Allow public read access on articles"
 ```
 
 ### 問題：無法上傳照片到 Storage
+
 1. 確認 bucket 名稱是 `article-photos`
 2. 確認 bucket 是 public
 3. 重新設置 Storage policies
 
 ### 問題：照片 URL 無法訪問
+
 1. 確認 bucket 設置為 Public
 2. 檢查 Storage 中是否有文件
 3. 使用正確的 URL 格式：`https://<project-id>.supabase.co/storage/v1/object/public/article-photos/<file-path>`
